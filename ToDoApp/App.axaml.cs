@@ -16,21 +16,26 @@ public partial class App : Application
 
     public App()
     {
-        _host = Host.CreateDefaultBuilder()
+        _host = CreateHostBuilder().Build();
+    }
+
+
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
+    private IHostBuilder CreateHostBuilder()
+    {
+        return Host.CreateDefaultBuilder()
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<MainViewModel>();
 
                 string? connectionString = hostContext.Configuration.GetConnectionString("Default");
-                if (connectionString != null )
+                if (connectionString != null)
                     services.AddSingleton<ITasksDbContextFactory>(new TasksDbContextFactory(connectionString));
 
-            })
-            .Build();
-    }
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
+            });
     }
 
     public override void OnFrameworkInitializationCompleted()
