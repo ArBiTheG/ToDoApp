@@ -11,6 +11,6 @@ namespace ToDoApp.DbContexts
     {
         public TasksDbContext(DbContextOptions options) : base(options) { }
 
-        DbSet<Task> Tasks { get; set; } = null!;
+        DbSet<TaskItem> Tasks { get; set; } = null!;
     }
 }

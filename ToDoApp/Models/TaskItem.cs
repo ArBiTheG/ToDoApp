@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ToDoApp.Models
 {
-    public class Task
+    public class TaskItem: IEntity
     {
-        public Task()
+        public TaskItem()
         {
             Name = string.Empty;
             Description = string.Empty;
