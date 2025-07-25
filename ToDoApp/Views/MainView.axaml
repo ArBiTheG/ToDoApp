@@ -11,23 +11,20 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-  <Grid RowDefinitions="auto,auto,*,auto">
-    <TextBlock Grid.Row="0" Margin="8" 
-               HorizontalAlignment="Center" 
-               Text="Задачи"/>
-    <StackPanel Grid.Row="1">
+  <Grid RowDefinitions="auto,*,auto">
+    <StackPanel Grid.Row="0">
       
     </StackPanel>
-    <ListBox Grid.Row="2" 
+    <ListBox Grid.Row="1" 
              Background="{x:Null}">
       
     </ListBox>
-    <StackPanel Grid.Row="3" 
+    <StackPanel Grid.Row="2" 
                 HorizontalAlignment="Right">
       <Button Margin="8" Padding="4" 
               MinHeight="40" MinWidth="120" 
               VerticalContentAlignment="Center" HorizontalContentAlignment="Center" 
-              Content="Добавить"/>
+              Content="Добавить задачу"/>
     </StackPanel>
   </Grid>
 </UserControl>
