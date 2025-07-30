@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ToDoApp.DbContexts;
+using ToDoApp.Models;
+using ToDoApp.Repositories;
 using ToDoApp.ViewModels;
 using ToDoApp.Views;
 
@@ -35,6 +37,7 @@ public partial class App : Application
                 if (connectionString != null)
                     services.AddSingleton<ITasksDbContextFactory>(new TasksDbContextFactory(connectionString));
 
+                services.AddSingleton<ITaskRepository, MockTaskRepository>();
             });
     }
 

@@ -9,7 +9,7 @@ using ToDoApp.Models;
 
 namespace ToDoApp.Repositories
 {
-    public class TaskRepository : IRepository<TaskItem>
+    public class TaskRepository : ITaskRepository
     {
         ITasksDbContextFactory _dbContextFactory;
 
