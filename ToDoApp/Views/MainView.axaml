@@ -16,15 +16,23 @@
       
     </StackPanel>
     <ListBox Grid.Row="1" 
-             Background="{x:Null}">
-      
+             Background="{x:Null}"
+              ItemsSource="{Binding Tasks}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <StackPanel>
+            <TextBlock Text="{Binding Name}" FontSize="16" />
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
     </ListBox>
     <StackPanel Grid.Row="2" 
                 HorizontalAlignment="Right">
       <Button Margin="8" Padding="4" 
               MinHeight="40" MinWidth="120" 
               VerticalContentAlignment="Center" HorizontalContentAlignment="Center" 
-              Content="Добавить задачу"/>
+              Content="Добавить задачу"
+               Command="{Binding AddTaskCommand}"/>
     </StackPanel>
   </Grid>
 </UserControl>
