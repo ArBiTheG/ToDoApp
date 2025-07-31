@@ -3,6 +3,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using ToDoApp.Models;
@@ -11,18 +12,26 @@ namespace ToDoApp.ViewModels
 {
     public class TaskEditorViewModel: ViewModelBase
     {
+        TaskItem _taskItem;
         public TaskEditorViewModel(TaskItem taskItem)
         {
             TaskItem = taskItem;
-            ApplyCommand = ReactiveCommand.Create<bool,TaskItem?>(ExecuteApplyCommand);
+            SubmitCommand = ReactiveCommand.Create<bool, TaskItem?>(ExecuteSubmitCommand);
+
         }
-        private TaskItem?  ExecuteApplyCommand(bool arg)
+
+        private TaskItem? ExecuteSubmitCommand(bool args)
         {
-            if (arg)
+            if (args)
                 return TaskItem;
             return null;
         }
-        TaskItem TaskItem { get; set; }
-        public ReactiveCommand<bool, TaskItem?> ApplyCommand { get; }
+
+        public TaskItem TaskItem 
+        { 
+            get => _taskItem; 
+            set => this.RaiseAndSetIfChanged(ref _taskItem, value); 
+        }
+        public ReactiveCommand<bool, TaskItem?> SubmitCommand { get; }
     }
 }

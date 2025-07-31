@@ -10,4 +10,30 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:TaskEditorViewModel/>
   </Design.DataContext>
+  <Grid Grid.RowDefinitions="auto,*,auto">
+    <Border Grid.Row="1">
+      <StackPanel>
+        <Grid Margin="2">
+          <TextBox VerticalAlignment="Center" 
+                   Text="{Binding TaskItem.Name}"/>
+        </Grid>
+        <Grid Margin="2">
+          <TextBox VerticalAlignment="Center" Height="64" 
+                   Text="{Binding TaskItem.Description}"/>
+        </Grid>
+        <Grid Margin="2" Grid.ColumnDefinitions="2*,4*">
+          <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="Срок выполнения"/>
+          <TextBox Grid.Column="1" VerticalAlignment="Center" Text="{Binding TaskItem.DateTime}"/>
+        </Grid>
+      </StackPanel>
+    </Border>
+    <Border Grid.Row="2">
+      <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+        <Button Margin="2" Width="96" HorizontalContentAlignment="Center" Content="Применить" IsDefault="True" 
+                Command="{Binding SubmitCommand}" CommandParameter="{x:True}"/>
+        <Button Margin="2" Width="96" HorizontalContentAlignment="Center" Content="Отмена"
+                Command="{Binding SubmitCommand}" CommandParameter="{x:False}"/>
+      </StackPanel>
+    </Border>
+  </Grid>
 </UserControl>
