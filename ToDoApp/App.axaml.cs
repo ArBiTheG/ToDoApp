@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using ToDoApp.DbContexts;
 using ToDoApp.Models;
 using ToDoApp.Repositories;
+using ToDoApp.Services;
 using ToDoApp.ViewModels;
 using ToDoApp.Views;
 
@@ -38,6 +39,7 @@ public partial class App : Application
                     services.AddSingleton<ITasksDbContextFactory>(new TasksDbContextFactory(connectionString));
 
                 services.AddSingleton<ITaskRepository, MockTaskRepository>();
+                services.AddSingleton<ITaskService, TaskService>();
             });
     }
 

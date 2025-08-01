@@ -50,5 +50,11 @@ namespace ToDoApp.Repositories
             using TasksDbContext context = _dbContextFactory.CreateDbContext();
             return await context.Tasks.FindAsync(id);
         }
+
+        public async Task<IEnumerable<TaskItem>> GetAll(Func<TaskItem, bool> predicate)
+        {
+            using TasksDbContext context = _dbContextFactory.CreateDbContext();
+            return await Task.Run(() => context.Tasks.AsNoTracking().Where(predicate).ToList());
+        }
     }
 }

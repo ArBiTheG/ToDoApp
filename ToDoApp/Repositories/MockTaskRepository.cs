@@ -14,6 +14,7 @@ namespace ToDoApp.Repositories
         public MockTaskRepository()
         {
             _tasks = new List<TaskItem>();
+            _tasks.Add(new TaskItem() { Name="Test", Description="DescriptionTest"});
         }
 
         public async Task Create(TaskItem entity)
@@ -40,6 +41,11 @@ namespace ToDoApp.Repositories
         public async Task<TaskItem?> GetByID(int id)
         {
             return await Task.Run(() => _tasks.Find(u => u.Id == id));
+        }
+
+        public async Task<IEnumerable<TaskItem>> GetAll(Func<TaskItem, bool> predicate)
+        {
+            return await Task.Run(() => _tasks.Where(predicate).ToList());
         }
     }
 }
