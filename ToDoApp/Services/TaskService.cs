@@ -36,7 +36,7 @@ namespace ToDoApp.Services
         {
             taskItem.Name = taskItemNew.Name;
             taskItem.Description = taskItemNew.Description;
-            taskItem.DateTime = taskItemNew.DateTime;
+            taskItem.DeadlineDateTime = taskItemNew.DeadlineDateTime;
             taskItem.IsCompleted = taskItemNew.IsCompleted;
             taskItem.CompletedDateTime = taskItemNew.CompletedDateTime;
 

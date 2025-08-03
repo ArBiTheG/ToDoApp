@@ -19,7 +19,8 @@ namespace ToDoApp.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime DateTime { get; set; }
+        public bool IsDeadline { get; set; }
+        public DateTime DeadlineDateTime { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime CompletedDateTime { get; set; }
 
@@ -30,7 +31,8 @@ namespace ToDoApp.Models
                 Id = Id,
                 Name = Name,
                 Description = Description,
-                DateTime = DateTime,
+                IsDeadline = IsDeadline,
+                DeadlineDateTime = DeadlineDateTime,
                 IsCompleted = IsCompleted,
                 CompletedDateTime = CompletedDateTime,
             };
@@ -46,15 +48,12 @@ namespace ToDoApp.Models
             return other is not null &&
                    Id == other.Id &&
                    Name == other.Name &&
-                   Description == other.Description &&
-                   DateTime == other.DateTime &&
-                   IsCompleted == other.IsCompleted &&
-                   CompletedDateTime == other.CompletedDateTime;
+                   Description == other.Description;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Name, Description, DateTime, IsCompleted, CompletedDateTime);
+            return HashCode.Combine(Id, Name, Description);
         }
 
         public static bool operator ==(TaskItem? left, TaskItem? right)
