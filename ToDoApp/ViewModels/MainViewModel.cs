@@ -23,10 +23,10 @@ public class MainViewModel : ViewModelBase
         _tasks = new ObservableCollection<TaskItem>();
         LoadTaskCommand = ReactiveCommand.CreateFromTask(ExecuteLoadTaskCommand);
         AddTaskCommand = ReactiveCommand.CreateFromTask(ExecuteAddTaskCommand);
-        EditTaskCommand = ReactiveCommand.CreateFromTask<int>(ExecuteEditTaskCommand);
-        RemoveTaskCommand = ReactiveCommand.CreateFromTask<int>(ExecuteRemoveTaskCommand);
-        CompleteTaskCommand = ReactiveCommand.CreateFromTask<int>(ExecuteCompleteTaskCommand);
-        UncompleteTaskCommand = ReactiveCommand.CreateFromTask<int>(ExecuteUncompleteTaskCommand);
+        EditTaskCommand = ReactiveCommand.CreateFromTask<TaskItem?>(ExecuteEditTaskCommand);
+        RemoveTaskCommand = ReactiveCommand.CreateFromTask<TaskItem?>(ExecuteRemoveTaskCommand);
+        CompleteTaskCommand = ReactiveCommand.CreateFromTask<TaskItem?>(ExecuteCompleteTaskCommand);
+        UncompleteTaskCommand = ReactiveCommand.CreateFromTask<TaskItem?>(ExecuteUncompleteTaskCommand);
         ShowDialog = new Interaction<TaskEditorViewModel, TaskItem?>();
     }
 
@@ -37,9 +37,7 @@ public class MainViewModel : ViewModelBase
 
     private async Task ExecuteAddTaskCommand()
     {
-        var vm = new TaskEditorViewModel(new TaskItem());
-
-        var result = await ShowDialog.Handle(vm);
+        var result = await ShowDialog.Handle(new TaskEditorViewModel(new TaskItem()));
         if (result != null)
         {
             await _taskService.Create(result);
@@ -47,14 +45,11 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task ExecuteEditTaskCommand(int id)
+    private async Task ExecuteEditTaskCommand(TaskItem? item)
     {
-        TaskItem? item = await _taskService.Get(id);
         if (item != null)
         {
-            var vm = new TaskEditorViewModel((TaskItem)item.Clone());
-
-            var result = await ShowDialog.Handle(vm);
+            var result = await ShowDialog.Handle(new TaskEditorViewModel((TaskItem)item.Clone()));
             if (result != null)
             {
                 await _taskService.Edit(item, result);
@@ -63,9 +58,8 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task ExecuteRemoveTaskCommand(int id)
+    private async Task ExecuteRemoveTaskCommand(TaskItem? item)
     {
-        TaskItem? item = await _taskService.Get(id);
         if (item != null)
         {
             await _taskService.Remove(item);
@@ -73,9 +67,8 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task ExecuteCompleteTaskCommand(int id)
+    private async Task ExecuteCompleteTaskCommand(TaskItem? item)
     {
-        TaskItem? item = await _taskService.Get(id);
         if (item != null)
         {
             await _taskService.Complete(item);
@@ -83,9 +76,8 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task ExecuteUncompleteTaskCommand(int id)
+    private async Task ExecuteUncompleteTaskCommand(TaskItem? item)
     {
-        TaskItem? item = await _taskService.Get(id);
         if (item != null)
         {
             await _taskService.Uncomplete(item);
@@ -106,10 +98,10 @@ public class MainViewModel : ViewModelBase
     }
     public ReactiveCommand<Unit, Unit> LoadTaskCommand { get; }
     public ReactiveCommand<Unit, Unit> AddTaskCommand { get; }
-    public ReactiveCommand<int, Unit> EditTaskCommand { get; }
-    public ReactiveCommand<int, Unit> RemoveTaskCommand { get; }
-    public ReactiveCommand<int, Unit> CompleteTaskCommand { get; }
-    public ReactiveCommand<int, Unit> UncompleteTaskCommand { get; }
+    public ReactiveCommand<TaskItem?, Unit> EditTaskCommand { get; }
+    public ReactiveCommand<TaskItem?, Unit> RemoveTaskCommand { get; }
+    public ReactiveCommand<TaskItem?, Unit> CompleteTaskCommand { get; }
+    public ReactiveCommand<TaskItem?, Unit> UncompleteTaskCommand { get; }
     public Interaction<TaskEditorViewModel, TaskItem?> ShowDialog { get; }
 
 }

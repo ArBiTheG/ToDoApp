@@ -33,17 +33,17 @@
                     Text="{Binding Name}" FontSize="18"/>
             <Button Grid.Column="2" Grid.Row="0"
                     Content="/"
-                    Command="{Binding ElementName=list, Path=DataContext.EditTaskCommand}" CommandParameter="{Binding Id}"/>
+                    Command="{Binding ElementName=list, Path=DataContext.EditTaskCommand}" CommandParameter="{Binding .}"/>
             <Button Grid.Column="3" Grid.Row="0"
                     Content="X"
-                    Command="{Binding ElementName=list, Path=DataContext.RemoveTaskCommand}" CommandParameter="{Binding Id}"/>
+                    Command="{Binding ElementName=list, Path=DataContext.RemoveTaskCommand}" CommandParameter="{Binding .}"/>
             <TextBlock Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="1"
                     MinHeight="48"
                     Text="{Binding Description}" FontSize="14"/>
             <Button Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                     Content="Выполнить задачу"
-                    Command="{Binding ElementName=list, Path=DataContext.CompleteTaskCommand}" CommandParameter="{Binding Id}"/>
+                    Command="{Binding ElementName=list, Path=DataContext.CompleteTaskCommand}" CommandParameter="{Binding .}"/>
           </Grid>
         </DataTemplate>
       </ListBox.ItemTemplate>

@@ -13,17 +13,21 @@
   <Grid Grid.RowDefinitions="auto,*,auto">
     <Border Grid.Row="1">
       <StackPanel>
-        <Grid Margin="2">
-          <TextBox VerticalAlignment="Center" 
-                   Text="{Binding TaskItem.Name}"/>
+        <TextBox VerticalAlignment="Center" 
+                 Text="{Binding Name}"/>
+        <TextBox VerticalAlignment="Center" Height="64" 
+                 Text="{Binding Description}"/>
+        <Grid ColumnDefinitions="*,2*,*">
+          <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                     Text="Дата выполнения"/>
+          <DatePicker Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                      SelectedDate="{Binding DeadlineDate}"/>
         </Grid>
-        <Grid Margin="2">
-          <TextBox VerticalAlignment="Center" Height="64" 
-                   Text="{Binding TaskItem.Description}"/>
-        </Grid>
-        <Grid Margin="2" Grid.ColumnDefinitions="2*,4*">
-          <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="Срок выполнения"/>
-          <TextBox Grid.Column="1" VerticalAlignment="Center" Text="{Binding TaskItem.DateTime}"/>
+        <Grid ColumnDefinitions="*,2*,*">
+          <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                     Text="Время выполнения"/>
+          <TimePicker Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                      SelectedTime="{Binding DeadlineTime}"/>
         </Grid>
       </StackPanel>
     </Border>
