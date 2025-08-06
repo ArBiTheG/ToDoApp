@@ -12,67 +12,28 @@ namespace ToDoApp.ViewModels
 {
     public class TaskEditorViewModel: ViewModelBase
     {
-        TaskItem _taskItem;
-        public TaskEditorViewModel(TaskItem taskItem)
-        {
-            _taskItem = taskItem;
-            SubmitCommand = ReactiveCommand.Create<bool, TaskItem?>(ExecuteSubmitCommand);
+        TaskViewModel _taskViewModel;
 
-        }
-
-        public string Name 
-        { 
-            get => _taskItem.Name;
-            set {
-                _taskItem.Name = value;
-                this.RaisePropertyChanged(nameof(Name));
-            }
-        }
-        public string Description 
-        { 
-            get => _taskItem.Description;
-            set
-            {
-                _taskItem.Description = value;
-                this.RaisePropertyChanged(nameof(Description));
-            }
-        }
-        public bool IsDeadline 
-        { 
-            get => _taskItem.IsDeadline; 
-            set
-            {
-                _taskItem.IsDeadline = value;
-                this.RaisePropertyChanged(nameof(IsDeadline));
-            } 
-        }
-        public DateTimeOffset DeadlineDate
+        public TaskEditorViewModel(): this(new TaskViewModel()) { }
+        public TaskEditorViewModel(TaskViewModel taskViewModel)
         {
-            get => new DateTimeOffset(_taskItem.DeadlineDateTime);
-            set
-            {
-                _taskItem.DeadlineDateTime = value.DateTime;
-                this.RaisePropertyChanged(nameof(DeadlineDate));
-            }
-        }
-        public TimeSpan DeadlineTime
-        {
-            get => _taskItem.DeadlineDateTime.TimeOfDay;
-            set
-            {
-                var dateTime = _taskItem.DeadlineDateTime.Date;
-                _taskItem.DeadlineDateTime = dateTime.Add(value);
-                this.RaisePropertyChanged(nameof(DeadlineTime));
-            }
+            TaskViewModel = taskViewModel;
+            SubmitCommand = ReactiveCommand.Create<bool, TaskViewModel?>(ExecuteSubmitCommand);
         }
 
-        private TaskItem? ExecuteSubmitCommand(bool args)
+        public TaskViewModel TaskViewModel 
+        { 
+            get => _taskViewModel; 
+            set => this.RaiseAndSetIfChanged(ref _taskViewModel, value); 
+        }
+
+        private TaskViewModel? ExecuteSubmitCommand(bool args)
         {
             if (args)
-                return _taskItem;
+                return TaskViewModel;
             return null;
         }
 
-        public ReactiveCommand<bool, TaskItem?> SubmitCommand { get; }
+        public ReactiveCommand<bool, TaskViewModel?> SubmitCommand { get; }
     }
 }

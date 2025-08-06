@@ -13,6 +13,7 @@ namespace ToDoApp.Models
         {
             Name = string.Empty;
             Description = string.Empty;
+            DeadlineDateTime = DateTime.Now;
         }
 
         [Key]

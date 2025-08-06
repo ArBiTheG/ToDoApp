@@ -18,36 +18,34 @@
       <ia:InvokeCommandAction Command="{Binding LoadTaskCommand}" />
     </ia:EventTriggerBehavior>
   </i:Interaction.Behaviors>
-  <Grid RowDefinitions="auto,*,auto">
+  <Grid x:Name="Root" RowDefinitions="auto,*,auto">
     <StackPanel Grid.Row="0">
       
     </StackPanel>
-    <ListBox Grid.Row="1" 
-             x:Name="list"
-             Background="{x:Null}"
-             ItemsSource="{Binding Tasks}">
-      <ListBox.ItemTemplate>
-        <DataTemplate>
+    <ItemsControl Grid.Row="1" 
+                  ItemsSource="{Binding Tasks}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="vm:TaskViewModel">
           <Grid ColumnDefinitions="6*,*,32,32" RowDefinitions="auto,*,auto">
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
                     Text="{Binding Name}" FontSize="18"/>
             <Button Grid.Column="2" Grid.Row="0"
                     Content="/"
-                    Command="{Binding ElementName=list, Path=DataContext.EditTaskCommand}" CommandParameter="{Binding .}"/>
+                    Command="{Binding #Root.((vm:MainViewModel)DataContext).EditTaskCommand}" CommandParameter="{Binding .}"/>
             <Button Grid.Column="3" Grid.Row="0"
                     Content="X"
-                    Command="{Binding ElementName=list, Path=DataContext.RemoveTaskCommand}" CommandParameter="{Binding .}"/>
+                    Command="{Binding #Root.((vm:MainViewModel)DataContext).RemoveTaskCommand}" CommandParameter="{Binding .}"/>
             <TextBlock Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="1"
                     MinHeight="48"
                     Text="{Binding Description}" FontSize="14"/>
             <Button Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                     Content="Выполнить задачу"
-                    Command="{Binding ElementName=list, Path=DataContext.CompleteTaskCommand}" CommandParameter="{Binding .}"/>
+                    Command="{Binding #Root.((vm:MainViewModel)DataContext).CompleteTaskCommand}" CommandParameter="{Binding .}"/>
           </Grid>
         </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
     <StackPanel Grid.Row="2" 
                 HorizontalAlignment="Right">
       <Button Margin="8" Padding="4" 

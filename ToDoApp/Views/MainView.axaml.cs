@@ -17,12 +17,12 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
         this.WhenActivated(action =>
                 action(ViewModel!.ShowDialog.RegisterHandler(DoShowDialogAsync)));
     }
-    private async Task DoShowDialogAsync(IInteractionContext<TaskEditorViewModel, TaskItem?> interaction)
+    private async Task DoShowDialogAsync(IInteractionContext<TaskEditorViewModel, TaskViewModel?> interaction)
     {
         var dialog = new TaskEditorWindow();
         dialog.DataContext = interaction.Input;
 
-        var result = await dialog.ShowDialog<TaskItem?>(GetWindow());
+        var result = await dialog.ShowDialog<TaskViewModel?>(GetWindow());
         interaction.SetOutput(result);
     }
 }

@@ -32,14 +32,8 @@ namespace ToDoApp.Services
             await _taskRepository.Create(taskItem);
         }
 
-        public async Task Edit(TaskItem taskItem, TaskItem taskItemNew)
+        public async Task Edit(TaskItem taskItem)
         {
-            taskItem.Name = taskItemNew.Name;
-            taskItem.Description = taskItemNew.Description;
-            taskItem.DeadlineDateTime = taskItemNew.DeadlineDateTime;
-            taskItem.IsCompleted = taskItemNew.IsCompleted;
-            taskItem.CompletedDateTime = taskItemNew.CompletedDateTime;
-
             await _taskRepository.Update(taskItem);
         }
 

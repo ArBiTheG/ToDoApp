@@ -12,7 +12,7 @@ namespace ToDoApp.Services
         Task<IEnumerable<TaskItem>> GetUncompleteList();
         Task<TaskItem?> Get(int id);
         Task Create(TaskItem taskItem);
-        Task Edit(TaskItem taskItem, TaskItem taskItemNew);
+        Task Edit(TaskItem taskItem);
         Task Remove(TaskItem taskItem);
         Task Complete(TaskItem taskItem);
         Task Uncomplete(TaskItem taskItem);
