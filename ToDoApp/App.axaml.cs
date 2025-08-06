@@ -38,7 +38,7 @@ public partial class App : Application
                 if (connectionString != null)
                     services.AddSingleton<ITasksDbContextFactory>(new TasksDbContextFactory(connectionString));
 
-                services.AddSingleton<ITaskRepository, MockTaskRepository>();
+                services.AddSingleton<ITaskRepository, TaskRepository>();
                 services.AddSingleton<ITaskService, TaskService>();
             });
     }
