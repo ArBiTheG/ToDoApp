@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Microsoft.Extensions.Logging;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,18 +9,22 @@ using System.Threading.Tasks;
 using ToDoApp.Models;
 using ToDoApp.Repositories;
 using ToDoApp.Services;
+using ToDoApp.Views;
 
 namespace ToDoApp.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    ITaskService _taskService;
+    private ITaskService _taskService;
+    private readonly ILogger<MainViewModel> _logger;
 
     ObservableCollection<TaskViewModel> _tasks;
 
-    public MainViewModel(ITaskService taskService)
+    public MainViewModel(ITaskService taskService, ILoggerFactory loggerFactory)
     {
         _taskService = taskService;
+        _logger = loggerFactory.CreateLogger<MainViewModel>();
+
         _tasks = new ObservableCollection<TaskViewModel>();
         LoadTaskCommand = ReactiveCommand.CreateFromTask(ExecuteLoadTaskCommand);
         AddTaskCommand = ReactiveCommand.CreateFromTask(ExecuteAddTaskCommand);
@@ -37,6 +42,7 @@ public class MainViewModel : ViewModelBase
         {
             Tasks.Add(new TaskViewModel(taskItem));
         }
+        _logger.LogInformation("Tasks has been loaded!");
     }
 
     private async Task ExecuteAddTaskCommand()
@@ -46,6 +52,7 @@ public class MainViewModel : ViewModelBase
         {
             _tasks.Add(result);
             await _taskService.Create(result.GetTaskItem());
+            _logger.LogInformation($"Task id:{result.Id} has been created!");
         }
     }
 
@@ -58,6 +65,7 @@ public class MainViewModel : ViewModelBase
             {
                 item.ApplyChanges(result);
                 await _taskService.Edit(item.GetTaskItem());
+                _logger.LogInformation($"Task id:{item.Id} has been edited!");
             }
         }
     }
@@ -68,6 +76,7 @@ public class MainViewModel : ViewModelBase
         {
             _tasks.Remove(item);
             await _taskService.Remove(item.GetTaskItem());
+            _logger.LogInformation($"Task id:{item.Id} has been removed!");
         }
     }
 
@@ -77,6 +86,7 @@ public class MainViewModel : ViewModelBase
         {
             await _taskService.Complete(item.GetTaskItem());
             await LoadTaskCommand.Execute();
+            _logger.LogInformation($"Task id:{item.Id} has been completed!");
         }
     }
 
@@ -86,6 +96,7 @@ public class MainViewModel : ViewModelBase
         {
             await _taskService.Uncomplete(item.GetTaskItem());
             await LoadTaskCommand.Execute();
+            _logger.LogInformation($"Task id:{item.Id} has been uncompleted!");
         }
     }
 
