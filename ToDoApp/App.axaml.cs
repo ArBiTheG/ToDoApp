@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,8 +36,7 @@ public partial class App : Application
                 services.AddSingleton<MainViewModel>();
 
                 string? connectionString = hostContext.Configuration.GetConnectionString("Default");
-                if (connectionString != null)
-                    services.AddSingleton<ITasksDbContextFactory>(new TasksDbContextFactory(connectionString));
+                services.AddDbContextFactory<TasksDbContext>(options=> options.UseSqlite(connectionString));
 
                 services.AddSingleton<ITaskRepository, TaskRepository>();
                 services.AddSingleton<ITaskService, TaskService>();
@@ -47,10 +47,10 @@ public partial class App : Application
     {
         _host.Start();
 
-        ITasksDbContextFactory contextFactory = _host.Services.GetRequiredService<ITasksDbContextFactory>();
+        IDbContextFactory<TasksDbContext> contextFactory = _host.Services.GetRequiredService<IDbContextFactory<TasksDbContext>>();
         using (TasksDbContext context = contextFactory.CreateDbContext())
         {
-            context.Database.EnsureCreated();
+            context.Database.Migrate();
         }
 
         var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();

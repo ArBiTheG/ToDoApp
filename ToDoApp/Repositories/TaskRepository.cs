@@ -11,9 +11,9 @@ namespace ToDoApp.Repositories
 {
     public class TaskRepository : ITaskRepository
     {
-        ITasksDbContextFactory _dbContextFactory;
+        IDbContextFactory<TasksDbContext> _dbContextFactory;
 
-        public TaskRepository(ITasksDbContextFactory factory)
+        public TaskRepository(IDbContextFactory<TasksDbContext> factory)
         {
             _dbContextFactory = factory;
         }
