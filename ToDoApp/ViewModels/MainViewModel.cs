@@ -17,7 +17,8 @@ public class MainViewModel : ViewModelBase
     private ITaskRepository _taskRepository;
     private readonly ILogger<MainViewModel> _logger;
 
-    ObservableCollection<TaskViewModel> _tasks;
+    private ObservableCollection<TaskViewModel> _tasks;
+    private bool _isBusy;
 
     public MainViewModel(ITaskRepository taskService, ILoggerFactory loggerFactory)
     {
@@ -25,27 +26,34 @@ public class MainViewModel : ViewModelBase
         _logger = loggerFactory.CreateLogger<MainViewModel>();
 
         _tasks = new ObservableCollection<TaskViewModel>();
-        LoadTaskCommand = ReactiveCommand.CreateFromTask(ExecuteLoadTaskCommand);
-        AddTaskCommand = ReactiveCommand.CreateFromTask(ExecuteAddTaskCommand);
-        EditTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteEditTaskCommand);
-        RemoveTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteRemoveTaskCommand);
-        CompleteTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteCompleteTaskCommand);
-        UncompleteTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteUncompleteTaskCommand);
+        _isBusy = false;
+
+        var canExecute = this.WhenAnyValue(x => x.IsBusy, x => x != true);
+
+        LoadTaskCommand = ReactiveCommand.CreateFromTask(ExecuteLoadTaskCommand, canExecute);
+        AddTaskCommand = ReactiveCommand.CreateFromTask(ExecuteAddTaskCommand, canExecute);
+        EditTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteEditTaskCommand, canExecute);
+        RemoveTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteRemoveTaskCommand, canExecute);
+        CompleteTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteCompleteTaskCommand, canExecute);
+        UncompleteTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteUncompleteTaskCommand, canExecute);
         ShowDialog = new Interaction<TaskEditorViewModel, TaskViewModel?>();
     }
 
     private async Task ExecuteLoadTaskCommand()
     {
+        IsBusy = true;
         var items = await _taskRepository.GetAll(t => t.IsCompleted==false);
         foreach (var taskItem in items)
         {
             Tasks.Add(new TaskViewModel(taskItem));
         }
         _logger.LogInformation("Tasks has been loaded!");
+        IsBusy = false;
     }
 
     private async Task ExecuteAddTaskCommand()
     {
+        IsBusy = true;
         var result = await ShowDialog.Handle(new TaskEditorViewModel());
         if (result != null)
         {
@@ -53,58 +61,65 @@ public class MainViewModel : ViewModelBase
             await _taskRepository.Create(result.GetTaskItem());
             _logger.LogInformation($"Task id:{result.Id} has been created!");
         }
+        IsBusy = false;
     }
 
-    private async Task ExecuteEditTaskCommand(TaskViewModel? item)
+    private async Task ExecuteEditTaskCommand(TaskViewModel? itemVM)
     {
-        if (item != null)
+        IsBusy = true;
+        if (itemVM != null)
         {
-            var result = await ShowDialog.Handle(new TaskEditorViewModel((TaskViewModel)item.Clone()));
+            var result = await ShowDialog.Handle(new TaskEditorViewModel((TaskViewModel)itemVM.Clone()));
             if (result != null)
             {
-                item.ApplyChanges(result);
-                await _taskRepository.Update(item.GetTaskItem());
-                _logger.LogInformation($"Task id:{item.Id} has been edited!");
+                itemVM.ApplyChanges(result);
+                await _taskRepository.Update(itemVM.GetTaskItem());
+                _logger.LogInformation($"Task id:{itemVM.Id} has been edited!");
             }
         }
+        IsBusy = false;
     }
 
-    private async Task ExecuteRemoveTaskCommand(TaskViewModel? item)
+    private async Task ExecuteRemoveTaskCommand(TaskViewModel? itemVM)
     {
-        if (item != null)
+        IsBusy = true;
+        if (itemVM != null)
         {
-            _tasks.Remove(item);
-            await _taskRepository.Delete(item.GetTaskItem());
-            _logger.LogInformation($"Task id:{item.Id} has been removed!");
+            _tasks.Remove(itemVM);
+            await _taskRepository.Delete(itemVM.GetTaskItem());
+            _logger.LogInformation($"Task id:{itemVM.Id} has been removed!");
         }
+        IsBusy = false;
     }
 
-    private async Task ExecuteCompleteTaskCommand(TaskViewModel? item)
+    private async Task ExecuteCompleteTaskCommand(TaskViewModel? itemVM)
     {
-        if (item != null)
+        IsBusy = true;
+        if (itemVM != null)
         {
-            var model = item.GetTaskItem();
-            model.IsCompleted = true;
-            model.CompletedDateTime = DateTime.Now;
+            var item = itemVM.GetTaskItem();
+            item.IsCompleted = true;
+            item.CompletedDateTime = DateTime.Now;
 
-            _tasks.Remove(item);
-            await _taskRepository.Update(model);
-            await LoadTaskCommand.Execute();
-            _logger.LogInformation($"Task id:{item.Id} has been completed!");
+            _tasks.Remove(itemVM);
+            await _taskRepository.Update(item);
+            _logger.LogInformation($"Task id:{itemVM.Id} has been completed!");
         }
+        IsBusy = false;
     }
 
-    private async Task ExecuteUncompleteTaskCommand(TaskViewModel? item)
+    private async Task ExecuteUncompleteTaskCommand(TaskViewModel? itemVM)
     {
-        if (item != null)
+        IsBusy = true;
+        if (itemVM != null)
         {
-            var model = item.GetTaskItem();
+            var model = itemVM.GetTaskItem();
             model.IsCompleted = false;
 
             await _taskRepository.Update(model);
-            await LoadTaskCommand.Execute();
-            _logger.LogInformation($"Task id:{item.Id} has been uncompleted!");
+            _logger.LogInformation($"Task id:{itemVM.Id} has been uncompleted!");
         }
+        IsBusy = false;
     }
 
     public ObservableCollection<TaskViewModel> Tasks 
@@ -118,6 +133,18 @@ public class MainViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _tasks, value);
         }
     }
+    public bool IsBusy
+    {
+        get
+        {
+            return _isBusy;
+        }
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _isBusy, value);
+        }
+    }
+
     public ReactiveCommand<Unit, Unit> LoadTaskCommand { get; }
     public ReactiveCommand<Unit, Unit> AddTaskCommand { get; }
     public ReactiveCommand<TaskViewModel?, Unit> EditTaskCommand { get; }
