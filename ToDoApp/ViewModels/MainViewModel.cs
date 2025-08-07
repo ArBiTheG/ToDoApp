@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DynamicData.Binding;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ToDoApp.Models;
 using ToDoApp.Repositories;
@@ -19,6 +22,8 @@ public class MainViewModel : ViewModelBase
 
     private ObservableCollection<TaskViewModel> _tasks;
     private bool _isBusy;
+    private string _searchText;
+    private CancellationTokenSource? _cancellationTokenSource;
 
     public MainViewModel(ITaskRepository taskService, ILoggerFactory loggerFactory)
     {
@@ -27,10 +32,14 @@ public class MainViewModel : ViewModelBase
 
         _tasks = new ObservableCollection<TaskViewModel>();
         _isBusy = false;
+        _searchText = "";
 
-        var canExecute = this.WhenAnyValue(x => x.IsBusy, x => x != true);
+        this.WhenAnyValue(vm => vm.SearchText)
+            .Throttle(TimeSpan.FromMilliseconds(400))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(DoSearch!);
 
-        LoadTaskCommand = ReactiveCommand.CreateFromTask(ExecuteLoadTaskCommand, canExecute);
+        var canExecute = this.WhenAnyValue(vm => vm.IsBusy, isBusy => isBusy != true);
         AddTaskCommand = ReactiveCommand.CreateFromTask(ExecuteAddTaskCommand, canExecute);
         EditTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteEditTaskCommand, canExecute);
         RemoveTaskCommand = ReactiveCommand.CreateFromTask<TaskViewModel?>(ExecuteRemoveTaskCommand, canExecute);
@@ -39,16 +48,12 @@ public class MainViewModel : ViewModelBase
         ShowDialog = new Interaction<TaskEditorViewModel, TaskViewModel?>();
     }
 
-    private async Task ExecuteLoadTaskCommand()
+    private async void DoSearch(string str)
     {
-        IsBusy = true;
-        var items = await _taskRepository.GetAll(t => t.IsCompleted==false);
-        foreach (var taskItem in items)
-        {
-            Tasks.Add(new TaskViewModel(taskItem));
-        }
-        _logger.LogInformation("Tasks has been loaded!");
-        IsBusy = false;
+        if (!string.IsNullOrWhiteSpace(str) && str.Length>3)
+            await LoadTasksList(str, false);
+        else
+            await LoadTasksList();
     }
 
     private async Task ExecuteAddTaskCommand()
@@ -122,6 +127,21 @@ public class MainViewModel : ViewModelBase
         IsBusy = false;
     }
 
+    private async Task LoadTasksList(string searchText = "", bool isCompleted = false)
+    {
+        IsBusy = true;
+        Tasks.Clear();
+
+        var items = await _taskRepository.GetAll(t => (t.Name.Contains(searchText) || t.Description.Contains(searchText)) &&
+                                                      t.IsCompleted == isCompleted);
+        foreach (var taskItem in items)
+        {
+            Tasks.Add(new TaskViewModel(taskItem));
+        }
+        _logger.LogInformation("Tasks has been loaded!");
+        IsBusy = false;
+    }
+
     public ObservableCollection<TaskViewModel> Tasks 
     { 
         get 
@@ -145,7 +165,11 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    public ReactiveCommand<Unit, Unit> LoadTaskCommand { get; }
+    public string SearchText 
+    { 
+        get => _searchText;
+        set => this.RaiseAndSetIfChanged(ref _searchText, value);
+    }
     public ReactiveCommand<Unit, Unit> AddTaskCommand { get; }
     public ReactiveCommand<TaskViewModel?, Unit> EditTaskCommand { get; }
     public ReactiveCommand<TaskViewModel?, Unit> RemoveTaskCommand { get; }
