@@ -10,20 +10,22 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:TaskEditorViewModel/>
   </Design.DataContext>
-  <Grid Grid.RowDefinitions="auto,*,auto">
-    <Border Grid.Row="1">
+  <Grid x:Name="Root"
+        Grid.RowDefinitions="auto,*,auto"
+        Margin="4">
+    <Border Grid.Row="1" Margin="4">
       <StackPanel>
-        <TextBox Margin="8" VerticalAlignment="Center" 
+        <TextBox Margin="4" VerticalAlignment="Center" 
                  Text="{Binding TaskViewModel.Name}"/>
-        <TextBox Margin="8" VerticalAlignment="Center" Height="64" 
+        <TextBox Margin="4" VerticalAlignment="Center" Height="64" 
                  Text="{Binding TaskViewModel.Description}"/>
-        <Grid Margin="8" ColumnDefinitions="*,2*,*">
+        <Grid Margin="4" ColumnDefinitions="*,2*,*">
           <TextBlock Grid.Column="0" VerticalAlignment="Center"
                      Text="Дата выполнения"/>
           <DatePicker Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch"
                       SelectedDate="{Binding TaskViewModel.DeadlineDate}"/>
         </Grid>
-        <Grid Margin="8" ColumnDefinitions="*,2*,*">
+        <Grid Margin="4" ColumnDefinitions="*,2*,*">
           <TextBlock Grid.Column="0" VerticalAlignment="Center"
                      Text="Время выполнения"/>
           <TimePicker Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch"
@@ -31,7 +33,7 @@
         </Grid>
       </StackPanel>
     </Border>
-    <Border Grid.Row="2">
+    <Border Grid.Row="2" Margin="4">
       <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
         <Button Margin="2" Width="96" HorizontalContentAlignment="Center" Content="Применить" IsDefault="True" 
                 Command="{Binding SubmitCommand}" CommandParameter="{x:True}"/>
