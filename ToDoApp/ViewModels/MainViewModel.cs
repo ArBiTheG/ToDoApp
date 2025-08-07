@@ -8,21 +8,20 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ToDoApp.Models;
 using ToDoApp.Repositories;
-using ToDoApp.Services;
 using ToDoApp.Views;
 
 namespace ToDoApp.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    private ITaskService _taskService;
+    private ITaskRepository _taskRepository;
     private readonly ILogger<MainViewModel> _logger;
 
     ObservableCollection<TaskViewModel> _tasks;
 
-    public MainViewModel(ITaskService taskService, ILoggerFactory loggerFactory)
+    public MainViewModel(ITaskRepository taskService, ILoggerFactory loggerFactory)
     {
-        _taskService = taskService;
+        _taskRepository = taskService;
         _logger = loggerFactory.CreateLogger<MainViewModel>();
 
         _tasks = new ObservableCollection<TaskViewModel>();
@@ -37,7 +36,7 @@ public class MainViewModel : ViewModelBase
 
     private async Task ExecuteLoadTaskCommand()
     {
-        var items = await _taskService.GetUncompleteList();
+        var items = await _taskRepository.GetAll(t => t.IsCompleted==false);
         foreach (var taskItem in items)
         {
             Tasks.Add(new TaskViewModel(taskItem));
@@ -51,7 +50,7 @@ public class MainViewModel : ViewModelBase
         if (result != null)
         {
             _tasks.Add(result);
-            await _taskService.Create(result.GetTaskItem());
+            await _taskRepository.Create(result.GetTaskItem());
             _logger.LogInformation($"Task id:{result.Id} has been created!");
         }
     }
@@ -64,7 +63,7 @@ public class MainViewModel : ViewModelBase
             if (result != null)
             {
                 item.ApplyChanges(result);
-                await _taskService.Edit(item.GetTaskItem());
+                await _taskRepository.Update(item.GetTaskItem());
                 _logger.LogInformation($"Task id:{item.Id} has been edited!");
             }
         }
@@ -75,7 +74,7 @@ public class MainViewModel : ViewModelBase
         if (item != null)
         {
             _tasks.Remove(item);
-            await _taskService.Remove(item.GetTaskItem());
+            await _taskRepository.Delete(item.GetTaskItem());
             _logger.LogInformation($"Task id:{item.Id} has been removed!");
         }
     }
@@ -84,7 +83,12 @@ public class MainViewModel : ViewModelBase
     {
         if (item != null)
         {
-            await _taskService.Complete(item.GetTaskItem());
+            var model = item.GetTaskItem();
+            model.IsCompleted = true;
+            model.CompletedDateTime = DateTime.Now;
+
+            _tasks.Remove(item);
+            await _taskRepository.Update(model);
             await LoadTaskCommand.Execute();
             _logger.LogInformation($"Task id:{item.Id} has been completed!");
         }
@@ -94,7 +98,10 @@ public class MainViewModel : ViewModelBase
     {
         if (item != null)
         {
-            await _taskService.Uncomplete(item.GetTaskItem());
+            var model = item.GetTaskItem();
+            model.IsCompleted = false;
+
+            await _taskRepository.Update(model);
             await LoadTaskCommand.Execute();
             _logger.LogInformation($"Task id:{item.Id} has been uncompleted!");
         }

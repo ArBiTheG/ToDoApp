@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using ToDoApp.DbContexts;
 using ToDoApp.Models;
 using ToDoApp.Repositories;
-using ToDoApp.Services;
 using ToDoApp.ViewModels;
 using ToDoApp.Views;
 
@@ -39,7 +38,6 @@ public partial class App : Application
                 services.AddDbContextFactory<TasksDbContext>(options=> options.UseSqlite(connectionString));
 
                 services.AddSingleton<ITaskRepository, TaskRepository>();
-                services.AddSingleton<ITaskService, TaskService>();
             });
     }
 
