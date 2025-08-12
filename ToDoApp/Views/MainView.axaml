@@ -5,6 +5,7 @@
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ToDoApp.ViewModels"
+			 xmlns:controls="clr-namespace:ToDoApp.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ToDoApp.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -23,14 +24,11 @@
                  Text="{Binding SearchText}"/>
       </Grid>
     </Border>
-    <Border Grid.Row="1" ZIndex="1" Width="100" 
-            VerticalAlignment="Center" HorizontalAlignment="Center"
-            IsVisible="{Binding IsBusy}">
-      <Grid RowDefinitions="auto, auto">
-        <ProgressBar Grid.Row="0" IsIndeterminate="True"/>
-        <TextBlock Grid.Row="1" Text="Подождите..."/>
-      </Grid>
-    </Border>
+	<controls:LoadingBar Grid.Row="1" ZIndex="1" 
+						 VerticalAlignment="Center"
+						 HorizontalAlignment="Center"
+						 IsVisible="{Binding IsBusy}"
+						 Text="Подождите пожалуйста..."/>
     <Border Grid.Row="1" Margin="4">
       <ItemsControl ItemsSource="{Binding Tasks}">
         <ItemsControl.ItemTemplate>
