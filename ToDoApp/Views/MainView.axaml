@@ -4,8 +4,8 @@
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:ToDoApp.ViewModels"
-			 xmlns:controls="clr-namespace:ToDoApp.Controls"
+			 xmlns:li="using:LoadingIndicators.Avalonia"
+			 xmlns:vm="clr-namespace:ToDoApp.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ToDoApp.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -24,11 +24,9 @@
                  Text="{Binding SearchText}"/>
       </Grid>
     </Border>
-	<controls:LoadingBar Grid.Row="1" ZIndex="1" 
-						 VerticalAlignment="Center"
-						 HorizontalAlignment="Center"
-						 IsVisible="{Binding IsBusy}"
-						 Text="Подождите пожалуйста..."/>
+	<li:LoadingIndicator Grid.Row="1" ZIndex="1"
+						 VerticalAlignment="Center" HorizontalAlignment="Center"
+						 IsActive="{Binding IsBusy}" Mode="Ring" SpeedRatio="1.2"/>
     <Border Grid.Row="1" Margin="4">
       <ItemsControl ItemsSource="{Binding Tasks}">
         <ItemsControl.ItemTemplate>
