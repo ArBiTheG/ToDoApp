@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ToDoApp.DbContexts;
+using ToDoApp.HostBuilders;
 using ToDoApp.Models;
 using ToDoApp.Repositories;
 using ToDoApp.ViewModels;
@@ -21,24 +22,17 @@ public partial class App : Application
     {
         _host = CreateHostBuilder().Build();
     }
-
+    public static IHostBuilder CreateHostBuilder()
+    {
+        return Host.CreateDefaultBuilder()
+            .AddViewModels()
+            .AddDbContext()
+            .AddRepository();
+    }
 
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-    }
-    private IHostBuilder CreateHostBuilder()
-    {
-        return Host.CreateDefaultBuilder()
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddSingleton<MainViewModel>();
-
-                string? connectionString = hostContext.Configuration.GetConnectionString("Default");
-                services.AddDbContextFactory<TasksDbContext>(options=> options.UseSqlite(connectionString));
-
-                services.AddSingleton<ITaskRepository, TaskRepository>();
-            });
     }
 
     public override void OnFrameworkInitializationCompleted()
