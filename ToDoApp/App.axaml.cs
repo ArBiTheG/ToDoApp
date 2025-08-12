@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.EntityFrameworkCore;
@@ -16,18 +17,17 @@ namespace ToDoApp;
 
 public partial class App : Application
 {
-    private IHost _host;
+    IHost? _host;
 
     public App()
     {
-        _host = CreateHostBuilder().Build();
-    }
-    public static IHostBuilder CreateHostBuilder()
-    {
-        return Host.CreateDefaultBuilder()
-            .AddViewModels()
-            .AddDbContext()
-            .AddRepository();
+        // This line is needed to make the previewer happy (the previewer plugin cannot handle the following line).
+        if (Design.IsDesignMode) return;
+
+        _host = Host.CreateDefaultBuilder()
+                .AddViewModels()
+                .AddDbContext()
+                .AddRepository().Build();
     }
 
     public override void Initialize()
@@ -37,15 +37,18 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        _host.Start();
+        _host?.Start();
 
-        IDbContextFactory<TasksDbContext> contextFactory = _host.Services.GetRequiredService<IDbContextFactory<TasksDbContext>>();
-        using (TasksDbContext context = contextFactory.CreateDbContext())
+        IDbContextFactory<TasksDbContext>? contextFactory = _host?.Services.GetRequiredService<IDbContextFactory<TasksDbContext>>();
+        if (contextFactory != null)
         {
-            context.Database.Migrate();
+            using (TasksDbContext context = contextFactory.CreateDbContext())
+            {
+                context.Database.Migrate();
+            }
         }
 
-        var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
+        MainViewModel mainViewModel = _host?.Services.GetRequiredService<MainViewModel>() ?? new MainViewModel();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

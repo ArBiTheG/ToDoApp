@@ -14,6 +14,10 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
     public MainView()
     {
         InitializeComponent();
+
+        // This line is needed to make the previewer happy (the previewer plugin cannot handle the following line).
+        if (Design.IsDesignMode) return;
+
         this.WhenActivated(action =>
                 action(ViewModel!.ShowDialog.RegisterHandler(DoShowDialogAsync)));
     }

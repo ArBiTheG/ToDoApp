@@ -17,19 +17,15 @@ namespace ToDoApp.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    private ITaskRepository _taskRepository;
-    private readonly ILogger<MainViewModel> _logger;
+    private ITaskRepository? _taskRepository;
+    private readonly ILogger<MainViewModel>? _logger;
 
     private ObservableCollection<TaskViewModel> _tasks;
     private bool _isBusy;
     private string _searchText;
-    private CancellationTokenSource? _cancellationTokenSource;
 
-    public MainViewModel(ITaskRepository taskService, ILoggerFactory loggerFactory)
+    public MainViewModel()
     {
-        _taskRepository = taskService;
-        _logger = loggerFactory.CreateLogger<MainViewModel>();
-
         _tasks = new ObservableCollection<TaskViewModel>();
         _isBusy = false;
         _searchText = "";
@@ -48,6 +44,12 @@ public class MainViewModel : ViewModelBase
         ShowDialog = new Interaction<TaskEditorViewModel, TaskViewModel?>();
     }
 
+    public MainViewModel(ITaskRepository taskService, ILoggerFactory loggerFactory) : this()
+    {
+        _taskRepository = taskService;
+        _logger = loggerFactory.CreateLogger<MainViewModel>();
+    }
+
     private async void DoSearch(string str)
     {
         if (!string.IsNullOrWhiteSpace(str) && str.Length>3)
@@ -58,19 +60,21 @@ public class MainViewModel : ViewModelBase
 
     private async Task ExecuteAddTaskCommand()
     {
+        if (_taskRepository == null) return;
         IsBusy = true;
         var result = await ShowDialog.Handle(new TaskEditorViewModel());
         if (result != null)
         {
             _tasks.Add(result);
             await _taskRepository.Create(result.GetTaskItem());
-            _logger.LogInformation($"Task id:{result.Id} has been created!");
+            _logger?.LogInformation($"Task id:{result.Id} has been created!");
         }
         IsBusy = false;
     }
 
     private async Task ExecuteEditTaskCommand(TaskViewModel? itemVM)
     {
+        if (_taskRepository == null) return;
         IsBusy = true;
         if (itemVM != null)
         {
@@ -79,7 +83,7 @@ public class MainViewModel : ViewModelBase
             {
                 itemVM.ApplyChanges(result);
                 await _taskRepository.Update(itemVM.GetTaskItem());
-                _logger.LogInformation($"Task id:{itemVM.Id} has been edited!");
+                _logger?.LogInformation($"Task id:{itemVM.Id} has been edited!");
             }
         }
         IsBusy = false;
@@ -87,18 +91,20 @@ public class MainViewModel : ViewModelBase
 
     private async Task ExecuteRemoveTaskCommand(TaskViewModel? itemVM)
     {
+        if (_taskRepository == null) return;
         IsBusy = true;
         if (itemVM != null)
         {
             _tasks.Remove(itemVM);
             await _taskRepository.Delete(itemVM.GetTaskItem());
-            _logger.LogInformation($"Task id:{itemVM.Id} has been removed!");
+            _logger?.LogInformation($"Task id:{itemVM.Id} has been removed!");
         }
         IsBusy = false;
     }
 
     private async Task ExecuteCompleteTaskCommand(TaskViewModel? itemVM)
     {
+        if (_taskRepository == null) return;
         IsBusy = true;
         if (itemVM != null)
         {
@@ -108,13 +114,14 @@ public class MainViewModel : ViewModelBase
 
             _tasks.Remove(itemVM);
             await _taskRepository.Update(item);
-            _logger.LogInformation($"Task id:{itemVM.Id} has been completed!");
+            _logger?.LogInformation($"Task id:{itemVM.Id} has been completed!");
         }
         IsBusy = false;
     }
 
     private async Task ExecuteUncompleteTaskCommand(TaskViewModel? itemVM)
     {
+        if (_taskRepository == null) return;
         IsBusy = true;
         if (itemVM != null)
         {
@@ -122,13 +129,14 @@ public class MainViewModel : ViewModelBase
             model.IsCompleted = false;
 
             await _taskRepository.Update(model);
-            _logger.LogInformation($"Task id:{itemVM.Id} has been uncompleted!");
+            _logger?.LogInformation($"Task id:{itemVM.Id} has been uncompleted!");
         }
         IsBusy = false;
     }
 
     private async Task LoadTasksList(string searchText = "", bool isCompleted = false)
     {
+        if (_taskRepository == null) return;
         IsBusy = true;
         Tasks.Clear();
 
@@ -138,7 +146,7 @@ public class MainViewModel : ViewModelBase
         {
             Tasks.Add(new TaskViewModel(taskItem));
         }
-        _logger.LogInformation("Tasks has been loaded!");
+        _logger?.LogInformation("Tasks has been loaded!");
         IsBusy = false;
     }
 
