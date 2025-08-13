@@ -6,7 +6,6 @@
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
 				<ResourceInclude Source="/Controls/LoadingBar.axaml"/>
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
